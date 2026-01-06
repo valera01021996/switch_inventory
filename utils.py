@@ -11,7 +11,7 @@ def create_collector(platform_name, host, credentials):
     
     if "vrp" in platform_lower:
         device_params = {
-            "device_type": "huawei_vrp",
+            "device_type": "vrp",
             "host": host,
             "username": credentials["username"],
             "password": credentials["password"],
@@ -21,7 +21,7 @@ def create_collector(platform_name, host, credentials):
 
     elif "yunshan" in platform_lower or "yun-shan" in platform_lower:
         device_params = {
-            "device_type": "yunshan_os",
+            "device_type": "yunshan",
             "host": host,
             "username": credentials["username"],
             "password": credentials["password"],
