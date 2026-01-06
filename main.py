@@ -9,8 +9,8 @@ NETBOX_TOKEN = os.getenv("NETBOX_TOKEN")
 NETBOX_URL = os.getenv("NETBOX_URL")
 
 credentials = {
-    "username": "root",
-    "password": "12345678",
+    "username": os.getenv("USERNAME"),
+    "password": os.getenv("PASSWORD"),
     "port": 22,
 }
 
