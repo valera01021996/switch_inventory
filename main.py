@@ -4,6 +4,10 @@ from utils import create_collector, get_credentials_by_platform
 import os
 from dotenv import load_dotenv
 
+import logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
 load_dotenv()
 
 NETBOX_TOKEN = os.getenv("NETBOX_TOKEN")
@@ -26,8 +30,13 @@ for device in devices:
 
     try:
         data = collector.collect()
+        logger.info(f"Device {device.name} ({device.platform.name}): collected data keys: {list(data.keys())}")
+
+        serial_value = data.get("serial", "unknown")
+        logger.info(f"Device {device.name}: serial value = {repr(serial_value)}, type = {type(serial_value)}, bool check = {bool(serial_value)}")
+
         nb.add_version(device, data.get("version", "unknown"))
-        nb.add_serial(device, data.get("serial", "unknown"))
+        nb.add_serial(device, serial_value)
         nb.add_interfaces_and_descriptions(device, data.get("interfaces"), data.get("ports_count", 0))
     finally:
         if hasattr(collector, 'disconnect'):

@@ -1,5 +1,11 @@
 import re
 from base import NetmikoBase
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
 
 class HuaweiBase(NetmikoBase):
     def get_serial(self):
@@ -13,7 +19,9 @@ class HuaweiBase(NetmikoBase):
         for command in commands:
             try:
                 out = self.cmd(command)
+                logger.info(f"[{self.device.get('host', 'unknown')})] Command '{command}' output (first 200 chars): {out[:200]}
             except Exception:
+                logger.warning(f"[{self.device.get('host', 'unknown')}] Command '{command}' failed {e}")
                 continue
 
             # ESN of slot 0: 102515094903
@@ -30,7 +38,7 @@ class HuaweiBase(NetmikoBase):
             m = re.search(r"\b(Serial Number|SN)\s*[:=]\s*([A-Z0-9\-]+)\b", out, re.IGNORECASE)
             if m:
                 return m.group(2).strip()
-
+        logger.warning(f"[{self.device.get('host', 'unknown')}] Serial not found, returning None")
         return None
 
     def get_interfaces(self):
