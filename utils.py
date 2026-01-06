@@ -1,0 +1,36 @@
+from huawei import HuaweiVRP, HuaweiYunShan
+from arista import AristaEOS
+
+
+def create_collector(platform_name, host, credentials):
+    platform_lower = platform_name.lower()
+    
+    if "vrp" in platform_lower:
+        device_params = {
+            "device_type": "huawei_vrp",
+            "host": host,
+            "username": credentials["username"],
+            "password": credentials["password"],
+            "port": credentials["port"],
+        }
+        return HuaweiVRP(device_params)
+
+    elif "yunshan" in platform_lower or "yun-shan" in platform_lower:
+        device_params = {
+            "device_type": "yunshan_os",
+            "host": host,
+            "username": credentials["username"],
+            "password": credentials["password"],
+            "port": credentials["port"],
+        }
+        return HuaweiYunShan(device_params)
+
+    elif "eos" in platform_lower or "arista" in platform_lower:
+        return AristaEOS(
+            host=host,
+            username=credentials["username"],
+            password=credentials["password"],
+            port=credentials.get("port", 80)
+        )
+    else:
+        raise ValueError(f"Unknown platform: {platform_name}")
