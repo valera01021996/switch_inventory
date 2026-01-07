@@ -14,6 +14,7 @@ class HuaweiBase(NetmikoBase):
             "display device manuinfo",
             "display sn license",
             "display sn",
+            "display device esn"
         ]
 
         for command in commands:
