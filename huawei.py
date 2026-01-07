@@ -44,6 +44,11 @@ class HuaweiBase(NetmikoBase):
 
     def get_interfaces(self):
         out = self.cmd("display interface description")
+
+        host = self.device.get('host', 'unknown')
+        logger.info(f"[{host}] Raw output from 'display interface description' (first 1000 chars):")
+        logger.info(f"[{host}] {out[:1000]}")
+
         interfaces = []
 
         lines = out.splitlines()
@@ -54,25 +59,29 @@ class HuaweiBase(NetmikoBase):
 
             if line.startswith("Interface"):
                 start = True
+                logger.info(f"[{host}] Found header line: '{line}'")
                 continue
 
-            if not start or not line.strip():
+            if not start or not line.strip():                
                 continue
 
             parts = line.split()
             if len(parts) < 3:
+                logger.warning(f"[{host}] ⚠ Skipped (parts < 3): '{line[:60]}' -> {parts}")
                 continue
 
             iface = parts[0]
 
             # исключаем логические/агрегации/служебные
             if iface.startswith(("Eth-Trunk", "Vlanif", "LoopBack", "NULL", "MEth")):
+                logger.debug(f"[{host}] ⊗ Excluded: {iface}")
                 continue
 
             desc = " ".join(parts[3:]) if len(parts) > 3 else ""
+            logger.debug(f"[{host}] ✓ Parsed: {iface} -> '{desc}'")
 
             interfaces.append({"name": iface, "description": desc})
-
+        logger.info(f"[{host}] 📊 Total parsed: {len(interfaces)} interfaces")
         return interfaces
 
     def collect(self):
