@@ -22,7 +22,7 @@ class HuaweiBase(NetmikoBase):
                 out = self.cmd(command)
                 logger.info(f"[{self.device.get('host', 'unknown')}] Command '{command}' output (first 200 chars): {out[:200]}")
             except Exception:
-                logger.warning(f"[{self.device.get('host', 'unknown')}] Command '{command}' failed {e}")
+                logger.warning(f"[{self.device.get('host', 'unknown')}] Command '{command}' failed")
                 continue
 
             # ESN of slot 0: 102515094903
