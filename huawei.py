@@ -20,7 +20,7 @@ class HuaweiBase(NetmikoBase):
         for command in commands:
             try:
                 out = self.cmd(command)
-                logger.info(f"[{self.device.get('host', 'unknown')})] Command '{command}' output (first 200 chars): {out[:200]}
+                logger.info(f"[{self.device.get('host', 'unknown')}] Command '{command}' output (first 200 chars): {out[:200]}")
             except Exception:
                 logger.warning(f"[{self.device.get('host', 'unknown')}] Command '{command}' failed {e}")
                 continue
