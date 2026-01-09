@@ -1,6 +1,6 @@
 from json import load
 from netbox_client import NetboxClient
-from utils import create_collector, get_credentials_by_platform
+from utils import create_collector, get_credentials
 import os
 from dotenv import load_dotenv
 
@@ -22,7 +22,7 @@ devices = nb.get_devices(filters={"role": "sw"})
 
 for device in devices:
     ip = nb.get_device_ip(device)
-    credentials = get_credentials_by_platform(device.platform.name)
+    credentials = get_credentials(device)
     collector = create_collector(device.platform.name, ip, credentials)
 
     if hasattr(collector, 'connect'):

@@ -40,25 +40,48 @@ def create_collector(platform_name, host, credentials):
         raise ValueError(f"Unknown platform: {platform_name}")
 
 
-def get_credentials_by_platform(platform_name):
-    platform_lower = platform_name.lower()
+def creds_from_profile(profile: str):
+    if not profile:
+        raise ValueError("Profile name cannot be empty")
 
-    if "vrp" in platform_lower or "yunshan" in platform_lower:
-        return {
-            "username": os.getenv("HUAWEI_USERNAME"),
-            "password": os.getenv("HUAWEI_PASSWORD"),
-            "port": int(os.getenv("HUAWEI_PORT", "22")),
-        }
+    p = profile.upper().strip()
 
-    elif "eos" in platform_lower:
-        return {
-            "username": os.getenv("ARISTA_USERNAME"),
-            "password": os.getenv("ARISTA_PASSWORD"),
-            "port": int(os.getenv("ARISTA_PORT", "80")),
-        }
-    else:
-        return {
-            "username": os.getenv("USERNAME", "admin"),
-            "password": os.getenv("PASSWORD", ""),
-            "port": int(os.getenv("PORT", "22")),
-        }
+    username = os.getenv(f"CRED_{p}_USERNAME")
+    password = os.getenv(f"CRED_{p}_PASSWORD")
+    port = os.getenv(f"CRED_{p}_PORT", "22")
+
+    if username is None or password is None:
+        raise RuntimeError(f"Credential profile {p} is not fully configured")
+
+    try:
+        port_int = int(port)
+    except (ValueError, TypeError):
+        raise ValueError(f"Invalid port value {port} for profile {p}. Must be an integer.")
+
+    return {
+        "username": username,
+        "password": password,
+        "port": port_int,
+    }
+
+
+def get_credentials(device):
+    try:
+        cf = device.custom_fields if hasattr(device, "custom_fields") else None
+    except AttributeError:
+        cf = None
+
+    if not isinstance(cf, dict):
+        cf = {}
+
+    profile = cf.get("credential_profile")
+
+    if profile:
+        try:
+            return creds_from_profile(profile)
+        except (RuntimeError, ValueError) as e:
+            raise RuntimeError(f"Failed to get credentials from profile for device {device.name}: {e}") from e
+
+    
+    raise RuntimeError(f"Device {device.name} has no 'credential_profile' in custom_fields.")
+
