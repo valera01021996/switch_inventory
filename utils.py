@@ -1,4 +1,5 @@
 from huawei import HuaweiVRP, HuaweiYunShan
+from h3c import H3CComware
 from arista import AristaEOS
 import os
 from dotenv import load_dotenv
@@ -36,6 +37,18 @@ def create_collector(platform_name, host, credentials):
             password=credentials["password"],
             port=credentials.get("port", 80)
         )
+
+    elif "h3c" in platform_lower or "comware" in platform_lower:
+        device_params = {
+            "device_type": "hp_comware",  # Netmiko использует hp_comware для H3C
+            "host": host,
+            "username": credentials["username"],
+            "password": credentials["password"],
+            "port": credentials["port"],
+        }
+        return H3CComware(device_params)
+
+
     else:
         raise ValueError(f"Unknown platform: {platform_name}")
 
