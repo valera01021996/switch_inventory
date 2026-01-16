@@ -1,5 +1,5 @@
 from huawei import HuaweiVRP, HuaweiYunShan
-from h3c import H3CComware
+from h3c_collector import H3CComware
 from arista import AristaEOS
 import os
 from dotenv import load_dotenv
